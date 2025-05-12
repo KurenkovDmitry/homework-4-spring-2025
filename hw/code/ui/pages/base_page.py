@@ -2,6 +2,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
+from selenium import webdriver
 
 
 class PageNotOpenedException(Exception):
@@ -29,7 +30,17 @@ class BasePage:
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
 
+    def safe_send_keys(self, element, text):
+        if any(ord(c) > 0xFFFF for c in text):
+            self.driver.execute_script("arguments[0].value = arguments[1];", element, text)
+        else:
+            element.clear()
+            element.send_keys(text)
+
     def input_text(self, locator, text, timeout=None):
         element = self.find(locator, timeout)
-        element.clear()
-        element.send_keys(text)
+        self.safe_send_keys(element, text)
+
+    def focus(self, locator, timeout=None):
+        el = self.find(locator, timeout=timeout)
+        webdriver.ActionChains(self.driver).move_to_element(el).perform()
