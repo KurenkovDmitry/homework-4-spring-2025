@@ -18,4 +18,35 @@ def test_survey_page(driver, survey_page):
         style_id="6"
     )
 
-    survey_page.proceed_to_questions()
+    questions_data = [
+        {
+            'type': 'multiple_choice',
+            'text': "Хотели бы Вы иметь возможность, делить задачи на доске одной кнопкой",
+            'options': ["Да", "Нет", "Нейтрально"]
+        },
+        {
+            'type': 'scale',
+            'text': "Оцените, насколько бы вы хотели увидеть этот функционал у нас",
+            'min_label': "1 - Нет",
+            'max_label': "10 - Да"
+        },
+        {
+            'type': 'text',
+            'text': "Напишите свои пожелания для этого функционала"
+        },
+        {
+            'type': 'multiple_choice',
+            'text': "Что бы Вы хотели увидеть?",
+            'options': ["Функционал соединения задач", "Функционал разделения задач"]
+        }
+    ]
+    survey_page.proceed_to_questions(questions_data)
+
+    survey_page.ending(
+        title="Спасибо за Ваши ответы!",
+        description="Заявка отправлена, попытаемся учесть все Ваши пожелания, ждите результат на нашем сайте!",
+        link="https://github.com/AnyFlex-Solutions"
+    )
+
+    survey_page.edit()
+    survey_page.delete()

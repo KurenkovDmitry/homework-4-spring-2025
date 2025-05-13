@@ -10,6 +10,8 @@ class PageNotOpenedException(Exception):
 
 
 class BasePage:
+    url: str = ''
+
     def __init__(self, driver):
         self.driver = driver
 
@@ -22,6 +24,11 @@ class BasePage:
 
     def wait(self, timeout=None):
         return WebDriverWait(self.driver, timeout or 5)
+
+    def open_and_wait(self, url: str = None):
+        url = url if url is not None else self.url
+        self.driver.get(url)
+        self.wait().until(EC.url_matches(url))
 
     def find(self, locator, timeout=None):
         return self.wait(timeout).until(EC.presence_of_element_located(locator))
