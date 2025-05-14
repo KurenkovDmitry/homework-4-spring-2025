@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from ui.pages.survey_page import SurveyPage
+from ui.pages.ad_plan_page import AdPlanPage
 
 
 @pytest.fixture(scope='session')
@@ -54,12 +55,16 @@ def driver(config):
 
     driver.maximize_window()
     driver.get('https://ads.vk.com/hq/overview')
-    time.sleep(20)  # Пауза на 60 секунд для ручной авторизации
+    time.sleep(40)  # Пауза на 60 секунд для ручной авторизации
     driver.get(url)
     yield driver
     driver.quit()
 
 
+# @pytest.fixture
+# def survey_page(driver):
+#     return SurveyPage(driver)
+
 @pytest.fixture
-def survey_page(driver):
-    return SurveyPage(driver)
+def ad_plan_page(driver):
+    return AdPlanPage(driver)
