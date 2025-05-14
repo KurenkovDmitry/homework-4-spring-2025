@@ -51,3 +51,9 @@ class BasePage:
     def focus(self, locator, timeout=None):
         el = self.find(locator, timeout=timeout)
         webdriver.ActionChains(self.driver).move_to_element(el).perform()
+
+    def submit(self, locator, timeout=None):
+        self.find(locator, timeout).submit()
+
+    def new_url(self, url):
+        self.driver.get(url)
