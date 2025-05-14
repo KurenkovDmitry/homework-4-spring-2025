@@ -7,7 +7,9 @@ def test_survey_page(driver, survey_page):
     survey_page.is_opened()
     survey_page.create_survey()
 
-    logo_path = os.path.join(os.getcwd(), 'assets/img/logo-main.png')
+    THIS_DIR = os.path.dirname(__file__)
+    HW_DIR = os.path.abspath(os.path.join(THIS_DIR, os.pardir))
+    logo_path = os.path.join(HW_DIR, 'assets/img/logo-main.png')
 
     survey_page.fill_survey_form(
         name="FlexiKanban",

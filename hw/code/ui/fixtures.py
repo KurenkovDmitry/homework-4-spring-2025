@@ -57,7 +57,7 @@ def driver(config):
 
     driver.maximize_window()
     driver.get('https://ads.vk.com/hq/overview')
-    time.sleep(20)  # Пауза на 60 секунд для ручной авторизации
+    time.sleep(60)  # Пауза на 60 секунд для ручной авторизации
     driver.get(url)
     yield driver
     driver.quit()

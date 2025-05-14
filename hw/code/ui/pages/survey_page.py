@@ -1,6 +1,7 @@
 from ui.pages.base_page import BasePage
 from selenium.webdriver.support import expected_conditions as EC
 from ui.locators.survey_locators import SurveyLocators
+import time
 
 
 class SurveyPage(BasePage):
@@ -119,46 +120,54 @@ class SurveyPage(BasePage):
 
     def edit(self):
         # Открываем нужный дропдаун
-        self.focus(self.loc.NAV_EDIT_BUTTON)
-        self.click(self.loc.NAV_EDIT_BUTTON)
+        self.focus(SurveyLocators.NAV_EDIT_BUTTON)
+        self.click(SurveyLocators.NAV_EDIT_BUTTON)
+        self.wait().until(EC.presence_of_element_located(SurveyLocators.MODAL_CONTENT))
 
         # Очищаем обязательные поля
-        self.input_text(self.loc.COMPANY_INPUT, "")
-        self.input_text(self.loc.DESCRIPTION_TEXTAREA, "")
+        self.find(SurveyLocators.COMPANY_INPUT).send_keys('\b' * 100)
+        self.find(SurveyLocators.DESCRIPTION_TEXTAREA).send_keys('\b' * 100)
 
-        # Нажимаем кнопку «Вопросы»
-        self.click(self.loc.SUBMIT_BUTTON)
+        self.click(SurveyLocators.SUBMIT_BUTTON)
 
         # Находим контейнер формы
-        container = self.find(self.loc.FORM_CONTAINER)
+        container = self.find(SurveyLocators.FORM_CONTAINER)
 
         # Ожидаем, пока в контейнере не появится минимум 2 элемента с ошибкой
         self.wait().until(
-            lambda driver: len(container.find_elements(*self.loc.VALIDATION_ERROR_FIELDS)) >= 2
+            lambda driver: len(container.find_elements(*SurveyLocators.VALIDATION_ERROR_FIELDS)) >= 2
         )
 
         # Проверяем наличие ошибок
-        errs = container.find_elements(*self.loc.VALIDATION_ERROR_FIELDS)
-        assert len(errs) < 2, "Ожидалось минимум 2 поля с ошибкой валидации"
-        for err in errs:
-            foot = err.find_element(*self.loc.ERROR_TEXT)
-            assert "Нужно заполнить" not in foot.text, "Неправильное сообщение об ошибке"
+        errs = container.find_elements(*SurveyLocators.VALIDATION_ERROR_FIELDS)
+        assert len(errs) >= 2, "Ожидалось минимум 2 поля с ошибкой валидации"
+
+        self.find(SurveyLocators.COMPANY_INPUT).send_keys('b' * 200)
+
+        # Ожидаем, пока в контейнере не появится минимум 2 элемента с ошибкой
+        self.wait().until(
+            lambda driver: len(container.find_elements(*SurveyLocators.VALIDATION_ERROR_FIELDS)) >= 2
+        )
+
+        # Проверяем наличие ошибок
+        errs = container.find_elements(*SurveyLocators.VALIDATION_ERROR_FIELDS)
+        assert len(errs) >= 2, "Ожидалось минимум 2 поля с ошибкой валидации"
 
         # Кликаем вне модального окна — по фону
-        self.click(self.loc.MODAL_OVERLAY)
+        self.click(SurveyLocators.MODAL_OVERLAY)
 
         # Ожидаем окно подтверждения закрытия без сохранения
         try:
-            modal = self.find(self.loc.CLOSE_EDITOR_MODAL_TITLE, timeout=3)
+            modal = self.find(SurveyLocators.CLOSE_EDITOR_MODAL_TITLE, timeout=3)
         except TimeoutException:
             raise AssertionError(
                 "Не появилось подтверждение закрытия без сохранения при некорректных данных"
             )
 
         # Проверяем кнопки модалки
-        ok_btn = modal.find_element(*self.loc.MODAL_SUBMIT_BUTTON)
-        cancel_btn = modal.find_element(*self.loc.MODAL_CANCEL_BUTTON)
-        assert not (ok.is_displayed() and cancel.is_displayed()), "Кнопки модалки не отображаются"
+        ok_btn = modal.find_element(*SurveyLocators.MODAL_SUBMIT_BUTTON)
+        cancel_btn = modal.find_element(*SurveyLocators.MODAL_CANCEL_BUTTON)
+        assert ok_btn.is_displayed() and cancel_btn.is_displayed(), "Кнопки модалки не отображаются"
 
         # Закрываем модалку, чтобы не мешать дальнейшим тестам
-        cancel_btn.click()
+        ok_btn.click()

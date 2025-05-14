@@ -21,9 +21,6 @@ class AdPlanPage(BasePage):
         self.input_text(AdPlanLocators.DESCRIPTION_TEXTAREA, description)
         self.input_text(AdPlanLocators.BUDGET_TEXTAREA, budget)
 
-        self.click(AdPlanLocators.BUDGET_FIELD)
-        self.click(AdPlanLocators.BUDGET_POPUP_FIRST)
-
         self.set_data(date_label)
 
         self.click(AdPlanLocators.SUBMIT_BUTTON)

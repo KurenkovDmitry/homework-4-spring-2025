@@ -17,7 +17,7 @@ class AdPlanLocators:
     DATE_OPTION = lambda date_label: (By.CSS_SELECTOR, f'div[aria-label="{date_label}"]')
 
     DESCRIPTION_TEXTAREA = (By.CSS_SELECTOR, 'textarea[placeholder="Опишите ваше предложение"]')
-    BUDGET_TEXTAREA = (By.CSS_SELECTOR, 'textarea[placeholder="Не задан"]')
+    BUDGET_TEXTAREA = (By.CSS_SELECTOR, 'input[data-testid="targeting-not-set"]')
     BUDGET_FIELD = (By.CSS_SELECTOR, 'input[data-testid="budget"]')
     BUDGET_POPUP_FIRST = (By.XPATH, '/html[1]/body[1]/div[1]/div[1]/div[2]/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]')
 

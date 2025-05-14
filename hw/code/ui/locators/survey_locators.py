@@ -115,10 +115,10 @@ class SurveyLocators:
 
     # Локаторы для редактирования
     NAV_EDIT_BUTTON = (By.XPATH, '//button[contains(@class, "Nav_item")]//span[contains(text(), "Редактировать")]')
-    FORM_CONTAINER = (By.CSS_SELECTOR, '.Preview_wrapper__Gq-Id')
-    VALIDATION_ERROR_FIELDS = (By.CSS_SELECTOR, '.vkuiFormItem--status-error')
-    ERROR_TEXT = (By.CSS_SELECTOR, '.vkuiFormItem__bottom')
-    MODAL_OVERLAY = (By.CSS_SELECTOR, 'div.ModalManagerPage_modalOverlay__*')
+    FORM_CONTAINER = (By.XPATH, '//*[contains(@class, "Preview_wrapper__Gq-Id")]')
+    VALIDATION_ERROR_FIELDS = (By.XPATH, '//*[contains(@class, "vkuiFormItem--status-error")]')
+    ERROR_TEXT = (By.XPATH, '//*[contains(@class, "vkuiFormItem__bottom")]')
+    MODAL_OVERLAY = (By.CSS_SELECTOR, 'button[aria-label="Close"]')
     CLOSE_EDITOR_MODAL_TITLE = (By.XPATH, '//h2[contains(text(),"Закрыть редактор опроса?")]')
     MODAL_SUBMIT_BUTTON = (By.XPATH, "../..//button[@data-testid='submit']")
     MODAL_CANCEL_BUTTON = (By.XPATH, "../..//button[@data-testid='cancel']")
