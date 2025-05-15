@@ -40,7 +40,9 @@ def driver(config):
         )
     else:
         if browser == 'chrome':
-            chromedriver_path = os.path.join(os.path.dirname(os.getcwd()), 'homework-4-spring-2025', 'hw', 'chromedriver-win64', 'chromedriver.exe')
+            THIS_DIR = os.path.dirname(__file__)
+            HW_DIR = os.path.abspath(os.path.join(THIS_DIR, os.pardir))
+            chromedriver_path = os.path.join(HW_DIR, 'chromedriver-win64', 'chromedriver.exe')
             print("ChromeDriver path:", chromedriver_path)
 
             if not os.path.isfile(chromedriver_path):
@@ -71,9 +73,10 @@ def driver(config):
     driver.quit()
 
 
-# @pytest.fixture
-# def survey_page(driver):
-#     return SurveyPage(driver)
+@pytest.fixture
+def survey_page(driver):
+    return SurveyPage(driver)
+
 
 @pytest.fixture
 def ad_plan_page(driver):

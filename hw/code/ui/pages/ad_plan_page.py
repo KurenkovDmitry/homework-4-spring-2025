@@ -2,97 +2,78 @@ from ui.pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from ui.locators.ad_plan_locators import AdPlanLocators
 
 
 class AdPlanPage(BasePage):
-    url = 'https://ads.vk.com/hq/new_create/ad_plan'
-    locators = {
-        'ad_name_input': (By.ID, 'ad-name'),
-    }
+    url = AdPlanLocators.URL
 
     def create_company_by_site(self, site):
-        self.click((By.CSS_SELECTOR, 'div[data-id="site_conversions"]'))
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[2]/fieldset/form/div[1]/div/div/div/div')))
-        self.focus((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[2]/fieldset/form/div[1]/div/div/div/div'))
-        self.click((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[2]/fieldset/form/div[1]/div/div/div/div'))
-        self.input_text((By.CSS_SELECTOR, 'input[id="search-:r12:"]'), site)
-        self.click((By.XPATH, '/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/form/div[2]/div[2]/div/div'))
+        self.click(AdPlanLocators.SITE_CONVERSIONS_TAB)
+        self.input_text(AdPlanLocators.SITE_INPUT, site)
+        self.click(AdPlanLocators.SITE_CONVERSIONS_TAB)
 
-    def set_data(self, data):
-        self.click((By.CSS_SELECTOR, 'span[data-testid="end-date"]'))
-        self.click((By.CSS_SELECTOR, f'div[aria-label={data}]'))
+    def set_data(self, date_label):
+        self.click(AdPlanLocators.END_DATE_TRIGGER)
+        self.click(AdPlanLocators.DATE_OPTION(date_label))
 
-    def input_data_about_site(self, description, budget, data):
-        self.input_text((By.CSS_SELECTOR, 'textarea[placeholder="Опишите ваше предложение"]'), description)
-        self.click((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[2]/fieldset/form/div[6]/div/div/div[1]/div[2]'))
-        self.click((By.XPATH, '/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/form/div[2]/div[2]/div[2]/div/div[2]'))
-        self.input_text((By.CSS_SELECTOR, 'textarea[placeholder="Не задан"]'), budget)
+    def input_data_about_site(self, description, budget, date_label):
+        self.input_text(AdPlanLocators.DESCRIPTION_TEXTAREA, description)
+        self.input_text(AdPlanLocators.BUDGET_TEXTAREA, budget)
 
-        self.click((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[2]/fieldset/form/div[9]/div/div/div/div/div/div'))
-        self.focus((By.XPATH, '//span[contains(text(), "за всё время")]'))
-        self.click((By.XPATH, '//span[contains(text(), "за всё время")]'))
+        self.set_data(date_label)
 
-        self.set_data(data)
-
-        self.click((By.XPATH, '//*[@id="footer"]/div/div/div/div/button'))
+        self.click(AdPlanLocators.SUBMIT_BUTTON)
 
     def test_more_group(self):
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/button'))
-        self.click((By.CSS_SELECTOR, f'button[aria-label="More"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[1]/div[2]'))
-        self.click((By.CSS_SELECTOR, f'button[data-testid="button-remove"]'))
+        self.click(AdPlanLocators.MORE_GROUP_BUTTON)
+        self.click(AdPlanLocators.MORE_BUTTON)
+        self.click(AdPlanLocators.GROUP_POPUP_ITEM)
+        self.click(AdPlanLocators.REMOVE_BUTTON)
 
-    def all_data(self, data):
-        self.click((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[1]/fieldset/div[2]/div[1]/div/div'))
-        self.click((By.CSS_SELECTOR, f'div[aria-disabled="false"]'))
-        self.click((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[1]/fieldset/div[2]/div[1]/div/div'))
+    def all_data(self, date_label, address):
+        self.click(AdPlanLocators.ALL_DATA_TRIGGER)
+        self.click(AdPlanLocators.ENABLED_OPTION)
+        self.click(AdPlanLocators.ALL_DATA_TRIGGER)
 
-        self.set_data(data)
-        self.click((By.CSS_SELECTOR, f'button[aria-label="Очистить поле"]'))
-        self.set_data(data)
+        self.set_data(date_label)
+        self.click(AdPlanLocators.CLEAR_FIELD)
+        self.set_data(date_label)
 
-        self.click((By.XPATH,
-                    '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[1]/fieldset/div[2]/div[2]/div'))
-        self.click((By.XPATH,
-                    '/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/button[2]'))
-        self.click((By.XPATH,
-                    '/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[4]/button'))
-        self.click((By.CSS_SELECTOR, f'div[data-id="0"]'))
-        self.click((By.XPATH,
-                    '/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[5]/button'))
+        self.click(AdPlanLocators.DATA_SUBSECTION_TRIGGER)
+        self.click(AdPlanLocators.POPUP_NEXT)
+        self.click(AdPlanLocators.POPUP_SELECT_LAST)
+        self.click(AdPlanLocators.FIRST_OPTION)
+        self.click(AdPlanLocators.POPUP_SELECT_FIFTH)
 
-        self.click((By.XPATH,
-                    '/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/section[2]/div[2]/fieldset/div/div/div[2]/button'))
-        self.input_text((By.CSS_SELECTOR, f'textarea[placeholder="Например: Россия, Москва, 468"]'), "Россия, Москва \n Россия, Санкт-Петербург")
-        self.click((By.XPATH,
-                    '/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/form/div[2]/button'))
-        self.click((By.CSS_SELECTOR, f'button[aria-label="close_button"]'))
+        # локация
+        self.click(AdPlanLocators.LOCATION_ADD_BUTTON)
+        self.input_text(AdPlanLocators.LOCATION_TEXTAREA, address)
+        self.click(AdPlanLocators.LOCATION_SUBMIT)
+        self.click(AdPlanLocators.CLOSE_LOCATION)
 
-        self.click((By.CSS_SELECTOR, f'div[id="react-collapsed-toggle-:r12:"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[1]/div[2]/fieldset/div[2]/div/div[1]/div[2]'))
-        self.click((By.CSS_SELECTOR, f'div[data-item-id="16"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[1]/div[2]/fieldset/div[4]/div/div'))
-        self.click((By.CSS_SELECTOR, f'option[value="16+"]'))
+        # возраст
+        self.click(AdPlanLocators.toggle("react-collapsed-toggle-:r12:"))
+        self.click(AdPlanLocators.AGE_SELECTOR)
+        self.click(AdPlanLocators.AGE_OPTION)
+        self.click(AdPlanLocators.AGE_DROPDOWN)
+        self.click(AdPlanLocators.AGE_POPUP_OPTION)
 
-        self.click((By.CSS_SELECTOR, f'div[id="react-collapsed-toggle-:rt:"]'))
-        self.click((By.CSS_SELECTOR, f'div[id="react-collapsed-toggle-:r1e:"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[2]/div[2]/fieldset/div[1]/div[1]/svg'))
-        self.click((By.CSS_SELECTOR, f'div[id="react-collapsed-toggle-:r1e:"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[2]/div[2]/fieldset/div[1]/div[2]/div/div/span'))
-        self.click((By.CSS_SELECTOR, f'div[data-id="9018"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/button'))
+        # секция 2
+        self.click(AdPlanLocators.SECTION2_TOGGLE)
+        self.click(AdPlanLocators.SECTION2_ICON)
+        self.click(AdPlanLocators.SECTION2_TOGGLE)
+        self.click(AdPlanLocators.SECTION2_CLICK_SPAN)
+        self.click(AdPlanLocators.SECTION2_POPUP_BUTTON)
 
-        self.click((By.CSS_SELECTOR, f'div[id="react-collapsed-toggle-:ru:"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[3]/div[2]/fieldset/div[1]/div/div/span'))
-        self.click((By.CSS_SELECTOR, f'div[data-item-id="11356434"]'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/button'))
-
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[3]/div[2]/fieldset/div[1]/div/button'))
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/div/main/div[2]/div[1]/div/div/div/div/div/div/section[3]/div[2]/fieldset/div[1]/div[2]/button'))
+        # секция 3
+        self.click(AdPlanLocators.SECTION3_TOGGLE)
+        self.click(AdPlanLocators.SECTION3_ITEM)
+        self.click(AdPlanLocators.SECTION3_OPTION)
+        self.click(AdPlanLocators.SECTION3_POPUP_BUTTON)
 
         self.test_more_group()
-
-        self.click((By.XPATH, f'/html/body/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/footer/div/div[2]/div[2]/div/button'))
+        self.click(AdPlanLocators.FOOTER_SUBMIT)
 
     def input_rich_text(self, locator, text):
         elem = self.wait().until(EC.element_to_be_clickable(locator))
@@ -102,13 +83,39 @@ class AdPlanPage(BasePage):
                           drv.find_element(*locator).get_attribute("textContent").strip() == text
                           )
 
-    def ending(self, logo_path, title, short_description, long_description):
-        self.click((By.XPATH, '//*[@data-testid="change-image"]'))
-        self.find((By.XPATH, '//input[@type="file"]')).send_keys(logo_path)
-        self.focus((By.XPATH, '//*[contains(@class, "ItemList_item")]'))
-        self.click((By.XPATH, '//*[contains(@class, "ItemList_item")]'))
-        self.wait().until(EC.presence_of_element_located((By.XPATH, '//div[contains(@class, "TitleBlock-module_appLogo")]/img')))
+    def ending(self, logo_path, example_path, paths, title, short_description, long_description):
+        self.click(EndingLocators.CHANGE_IMAGE_BUTTON)
+        self.find(EndingLocators.FILE_INPUT).send_keys(logo_path)
+        self.focus(EndingLocators.ITEM_LIST_ITEM)
+        self.click(EndingLocators.ITEM_LIST_ITEM)
+        self.wait().until(EC.presence_of_element_located(EndingLocators.APP_LOGO_IMAGE))
 
-        self.input_rich_text((By.CSS_SELECTOR, 'div[data-testid="заголовок, макс. 40 символов"]'), title)
-        self.input_rich_text((By.CSS_SELECTOR, 'div[data-testid="описание, макс. 90 символов"]'), short_description)
-        self.input_rich_text((By.CSS_SELECTOR, 'div[data-testid="Длинный текст для использования в лентах соцсетей (2000 знаков)"]'), long_description)
+        self.input_rich_text(EndingLocators.TITLE_FIELD, title)
+        self.input_rich_text(EndingLocators.SHORT_DESC_FIELD, short_description)
+        self.input_rich_text(EndingLocators.LONG_DESC_FIELD, long_description)
+
+        self.find(EndingLocators.EXAMPLE_UPLOAD_INPUT).send_keys(example_path)
+
+        self.click(EndingLocators.BUTTON_8)
+        self.click(EndingLocators.BUTTON_22)
+
+        self.wait().until(EC.element_to_be_clickable(EndingLocators.WAIT_BUTTON))
+
+        self.click(EndingLocators.MULTI_OPTIONS_BUTTON)
+        self.click(EndingLocators.POPUP_DIV1)
+
+        self.click(EndingLocators.ATTACHMENTS_MODE_SELECT_BUTTON)
+        self.click(EndingLocators.POPUP_DIV2)
+
+        for el in paths:
+            self.click(EndingLocators.UPLOAD_MEDIA_BUTTON)
+            self.find(EndingLocators.FILE_INPUT).send_keys(el)
+            self.focus(EndingLocators.ITEM_LIST_ITEM)
+            self.click(EndingLocators.ITEM_LIST_ITEM)
+
+        self.click(EndingLocators.PRIMARY_SUBMIT)
+
+    def delete(self, url):
+        self.new_url(url)
+        self.focus(EndingLocators.ACTIONS_BUTTON)
+        self.click(EndingLocators.DELETE_OPTION)
