@@ -1,0 +1,22 @@
+# Игнорируем виртуальное окружение
+venv/
+.gitigonre
+# Игнорируем кэш Python
+*/__pycache__/
+*.pyc
+
+# Игнорируем временные файлы и кэш pytest
+.pytest_cache/
+*.log
+
+# Игнорируем файлы и папки в проекте
+cookies.json
+/localstorage.json
+/hw/code/ui/locators/audience_locators.py
+/hw/code/ui/pages/audience_page.py
+/hw/code/tests/test_audience_page.py
+/hw/code/ui/pages/__pycache__/
+/hw/code/ui/locators/__pycache__/
+/hw/code/ui/__pycache__/
+/hw/code/__pycache__/
+/hw/code/tests/__pycache__/

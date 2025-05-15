@@ -1,6 +1,7 @@
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common import TimeoutException
 import time
 from selenium import webdriver
 
@@ -51,3 +52,20 @@ class BasePage:
     def focus(self, locator, timeout=None):
         el = self.find(locator, timeout=timeout)
         webdriver.ActionChains(self.driver).move_to_element(el).perform()
+
+    def exists(self, locator, timeout=2):
+        try:
+            return self.wait(timeout).until(EC.presence_of_element_located(locator))
+        except TimeoutException:
+            return None
+
+    def clear_field(self, field_locator: tuple[str, str]):
+        field = self.find(field_locator)
+        self.driver.execute_script("arguments[0].value = '';", field)
+        self.wait().until(lambda driver: field.get_attribute('value') == '')
+
+    def find_elements(self, locator, timeout=None):
+        return self.wait(timeout).until(EC.presence_of_all_elements_located(locator))
+    
+    def get_field_value(self, field_locator: tuple[str, str]):
+        return self.find(field_locator).get_attribute('value')

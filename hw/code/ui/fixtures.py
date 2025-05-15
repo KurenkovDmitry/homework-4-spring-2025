@@ -6,6 +6,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from ui.pages.survey_page import SurveyPage
 from ui.pages.ad_plan_page import AdPlanPage
+from ui.pages.catalog_page import CommerceCenterPage
+from ui.pages.audience_page import AudiencePage
+from ui.utils import save_session, load_session
 
 
 @pytest.fixture(scope='session')
@@ -37,13 +40,13 @@ def driver(config):
         )
     else:
         if browser == 'chrome':
-            chromedriver_path = os.path.join(os.path.dirname(os.getcwd()), 'chromedriver-win64', 'chromedriver.exe')
+            chromedriver_path = os.path.join(os.path.dirname(os.getcwd()), 'homework-4-spring-2025', 'hw', 'chromedriver-win64', 'chromedriver.exe')
             print("ChromeDriver path:", chromedriver_path)
 
             if not os.path.isfile(chromedriver_path):
                 raise FileNotFoundError(f"ChromeDriver not found at {chromedriver_path}")
             service = Service(executable_path=chromedriver_path)
-            options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            options.binary_location = r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 
             if not os.path.isfile(options.binary_location):
                 raise FileNotFoundError(f"Chrome binary not found at {options.binary_location}")
@@ -54,9 +57,16 @@ def driver(config):
             raise RuntimeError(f'Unsupported browser: "{browser}"')
 
     driver.maximize_window()
-    driver.get('https://ads.vk.com/hq/overview')
-    time.sleep(40)  # Пауза на 60 секунд для ручной авторизации
-    driver.get(url)
+
+    # Восстановление сессии
+    load_session(driver, base_url=config['url'])
+
+    # Пауза для ручной авторизации, если требуется
+    time.sleep(5)
+
+    # Сохранение сессии
+    save_session(driver)
+
     yield driver
     driver.quit()
 
@@ -68,3 +78,11 @@ def driver(config):
 @pytest.fixture
 def ad_plan_page(driver):
     return AdPlanPage(driver)
+
+@pytest.fixture
+def catalog_page(driver):
+    return CommerceCenterPage(driver)
+
+@pytest.fixture
+def audience_page(driver):
+    return AudiencePage(driver)
