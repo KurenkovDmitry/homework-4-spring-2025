@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.common import TimeoutException
 import time
 from selenium import webdriver
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 class PageNotOpenedException(Exception):
@@ -37,6 +38,15 @@ class BasePage:
     def click(self, locator, timeout=None):
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
+
+    def click_retry(self, locator, retries=3, delay=0.5):
+        for _ in range(retries):
+            try:
+                self.click(locator)
+                return
+            except StaleElementReferenceException:
+                time.sleep(delay)
+        raise RuntimeError(f"Не удалось кликнуть по {locator} из-за устаревшего элемента")
 
     def safe_send_keys(self, element, text):
         if any(ord(c) > 0xFFFF for c in text):
@@ -75,3 +85,13 @@ class BasePage:
 
     def new_url(self, url):
         self.driver.get(url)
+
+    def scroll_into_view(self, locator, retries=3, delay=0.5):
+        for _ in range(retries):
+            try:
+                el = self.find(locator)
+                self.driver.execute_script("arguments[0].scrollIntoView(true);", el)
+                return
+            except StaleElementReferenceException:
+                time.sleep(delay)
+        raise RuntimeError(f"Не удалось кликнуть по {locator} из-за устаревшего элемента")

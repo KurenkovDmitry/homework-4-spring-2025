@@ -1,5 +1,3 @@
-import time
-
 from selenium.webdriver.common.by import By
 from ui.pages.base_page import BasePage
 from selenium.webdriver.support import expected_conditions as EC
@@ -43,11 +41,12 @@ class SurveyPage(BasePage):
         self.click(SurveyLocators.STYLE_DIV(style_id))
 
     def upload_logo(self, logo_path):
+        # Загружает логотип через файл-инпут и подтверждает выбор изображения
         self.click(SurveyLocators.SET_GLOBAL_IMAGE)
         self.find(SurveyLocators.FILE_INPUT).send_keys(logo_path)
         self.wait().until(EC.presence_of_element_located(SurveyLocators.ITEM_LIST_ITEM))
-        self.focus(SurveyLocators.ITEM_LIST_ITEM)
-        self.click(SurveyLocators.ITEM_LIST_ITEM)
+        self.scroll_into_view(SurveyLocators.ITEM_LIST_ITEM)
+        self.click_retry(SurveyLocators.ITEM_LIST_ITEM)
         self.wait().until(EC.presence_of_element_located(SurveyLocators.APP_LOGO))
 
     def submit_form(self):
@@ -55,6 +54,8 @@ class SurveyPage(BasePage):
         self.click(SurveyLocators.SUBMIT_BUTTON)
 
     def single_choice_question(self, options, sample_answer=False):
+        # Заполняет вариант вопроса с единственным выбором
+        # При необходимости добавляет шаблонный ответ
         self.input_text(SurveyLocators.YES_INPUT, options[0])
         self.input_text(SurveyLocators.NO_INPUT, options[1])
         if len(options) > 2:
@@ -71,6 +72,7 @@ class SurveyPage(BasePage):
             self.click(SurveyLocators.TEMPLATE_OPTION)
 
     def multiple_choice_question(self, options):
+        # Заполняет вариант вопроса с множественным выбором
         self.click(SurveyLocators.MULTIPLE_CHOICE_OPTION)
         self.input_text(SurveyLocators.YES_INPUT, options[0])
         self.input_text(SurveyLocators.NO_INPUT, options[1])
@@ -79,6 +81,7 @@ class SurveyPage(BasePage):
             self.input_text(SurveyLocators.NEUTRAL_INPUT, options[2])
 
     def scale_question(self, min_label, max_label, test_range=False):
+        # Заполняет шкальный вопрос с метками минимального и максимального значений
         self.click(SurveyLocators.SCALE_OPTION)
         self.input_text(SurveyLocators.SCALE_MIN_INPUT, min_label)
         self.input_text(SurveyLocators.SCALE_MAX_INPUT, max_label)
@@ -91,9 +94,11 @@ class SurveyPage(BasePage):
             self.click(SurveyLocators.RANGE_OPTION)
 
     def text_question(self):
+        # Выбирает тип вопроса "Текст"
         self.click(SurveyLocators.TEXT_OPTION)
 
     def configure_first_question(self, question_type, text, options=None, min_label=None, max_label=None, sample_answer=False):
+        # Конфигурирует первый вопрос, выбирая тип и заполняя содержимое
         textarea = SurveyLocators.QUESTION_1_TEXTAREA
         self.input_text(textarea, text)
         if question_type == 'single_choice' and options:
@@ -118,9 +123,11 @@ class SurveyPage(BasePage):
             self.text_question()
 
     def delete_second_question(self):
+        # Удаляет второй вопрос
         self.find_elements(SurveyLocators.REMOVE_QUESTION_BUTTON)[1].click()
 
     def add_second_question(self, question_type, text, options=None, min_label=None, max_label=None, delete=False):
+        # Добавляет второй вопрос, конфигурирует его и, опционально, удаляет
         self.click(SurveyLocators.ADD_QUESTION_BUTTON)
         textarea = SurveyLocators.QUESTION_2_TEXTAREA
         self.input_text(textarea, text)
@@ -148,79 +155,167 @@ class SurveyPage(BasePage):
         if delete:
             self.delete_second_question()
 
+    def duplicate(self, number):
+        # Дублирует вопрос по индексу и удаляет его копию
+        self.find_elements(SurveyLocators.DUPLICATE_QUESTION_BUTTON)[number].click()
+        self.find_elements(SurveyLocators.REMOVE_QUESTION_BUTTON)[number + 1].click()
+
+    def add_rule(self):
+        # Добавляет правило показа
+        self.click(SurveyLocators.RULE_BUTTON)
+
+    def remove_rule(self):
+        # Удаляет правило показа
+        self.click(SurveyLocators.RULE_BUTTON)
+
+    def set_rule_criteria(self, amount):
+        # Устанавливает критерии для правил показа
+        try:
+            for i in range(amount):
+                self.click(SurveyLocators.RULE_CRITERIA)
+                self.find_elements(SurveyLocators.RULE_OPTION)[i].click()
+        except Exception as e:
+            raise RuntimeError(f"Ошибка при установке rule criteria: {e}")
+
     def add_stop_screen(self):
+        # Добавляет стоп-экран
         self.click(SurveyLocators.ADD_STOP_SCREEN_BUTTON)
 
     def remove_stop_screen(self):
+        # Удаляет стоп-экран
         self.click(SurveyLocators.REMOVE_STOP_SCREEN_BUTTON)
 
-    def set_trigger_question(self):
-        self.click(SurveyLocators.TRIGGER_QUESTION)
-        self.click(SurveyLocators.TRIGGER_QUESTION_OPTION)
-
-    def set_trigger_criteria(self, option):
-        self.click(SurveyLocators.TRIGGER_CRITERIA)
-        if option == 1:
-            self.click(SurveyLocators.TRIGGER_OPTION_1)
-        elif option == 2:
-            self.click(SurveyLocators.TRIGGER_OPTION_2)
+    def set_trigger_criteria(self, amount):
+        # Устанавливает критерии для стоп-экрана
+        try:
+            for i in range(amount):
+                self.click(SurveyLocators.TRIGGER_CRITERIA)
+                self.find_elements(SurveyLocators.TRIGGER_OPTION)[i].click()
+        except Exception as e:
+            raise RuntimeError(f"Ошибка при установке trigger criteria: {e}")
 
     def set_thank_you_title(self, title):
+        # Заполняет заголовок экрана благодарности
         self.input_text(SurveyLocators.THANK_YOU_TITLE, title)
 
     def set_thank_you_description(self, description):
+        # Заполняет описание экрана благодарности
         self.input_text(SurveyLocators.THANK_YOU_DESCRIPTION, description)
 
     def set_ending_title(self, title):
+        # Заполняет заголовок завершающего экрана
         self.input_text(SurveyLocators.ENDING_TITLE_INPUT, title)
 
     def set_ending_description(self, description):
+        # Заполняет описание завершающего экрана
         self.input_text(SurveyLocators.ENDING_DESCRIPTION_INPUT, description)
 
     def add_link(self, link):
+        # Добавляет ссылку на завершающем экране
         self.click(SurveyLocators.ADD_LINK_BUTTON)
         self.input_text(SurveyLocators.LINK_INPUT, link)
 
     def save_ending(self):
+        # Сохраняет настройки завершающего экрана
         self.click(SurveyLocators.SAVE_ENDING_BUTTON)
 
     def open_edit_modal(self):
+        # Открывает модальное окно редактирования опроса
         self.focus(SurveyLocators.NAV_EDIT_BUTTON)
         self.click(SurveyLocators.NAV_EDIT_BUTTON)
         self.wait().until(EC.presence_of_element_located(SurveyLocators.MODAL_CONTENT))
 
-    def clear_field(self, locator):
-        field = self.find(locator)
-        field.send_keys('\b' * 100)
-
-    def get_validation_errors(self):
-        container = self.find(SurveyLocators.FORM_CONTAINER)
-        return container.find_elements(*SurveyLocators.VALIDATION_ERROR_FIELDS)
+    def check_name(self, value):
+        # Проверяет, совпадает ли значение поля "Название" с ожидаемым
+        return self.get_field_value(SurveyLocators.NAME_INPUT) == value
 
     def close_modal(self):
+        # Закрывает модальное окно
         self.click(SurveyLocators.MODAL_OVERLAY)
 
     def confirm_close_without_saving(self):
-        modal = self.find(SurveyLocators.CLOSE_EDITOR_MODAL_TITLE)
-        ok_btn = modal.find_element(*SurveyLocators.MODAL_SUBMIT_BUTTON)
-        ok_btn.click()
+        # Подтверждает закрытие модального окна без сохранения
+        self.click(SurveyLocators.MODAL_CANCEL_BUTTON)
+
+    def confirm_close_with_saving(self):
+        # Подтверждает закрытие модального окна с сохранением
+        self.click(SurveyLocators.MODAL_SUBMIT_BUTTON)
 
     def archive_survey(self):
+        # Архивирует опрос и дожидается завершения действия
         self.focus(SurveyLocators.ARCHIVE_BUTTON)
         self.click(SurveyLocators.ARCHIVE_BUTTON)
         self.click(SurveyLocators.CONFIRM_ARCHIVE_BUTTON)
         self.wait().until(EC.invisibility_of_element_located(SurveyLocators.CONFIRM_ARCHIVE_BUTTON))
 
-    # Helper methods for verification (optional, depending on test needs)
+    def select_archive_category(self):
+        # Переключает фильтр списка опросов на "Архив"
+        self.click(SurveyLocators.SELECT_CATEGORY_DROPDOWN)
+        self.click(SurveyLocators.ARCHIVE_CATEGORY_OPTION)
+
+    def select_active_category(self):
+        # Переключает фильтр списка опросов на "Активные"
+        self.click(SurveyLocators.SELECT_CATEGORY_DROPDOWN)
+        self.click(SurveyLocators.ACTIVE_CATEGORY_OPTION)
+
+    def restore_survey(self, name):
+        # Восстанавливает ранее заархивированный опрос
+        self.focus(SurveyLocators.RESTORE_ELEMENT_BUTTON)
+        self.click(SurveyLocators.RESTORE_ELEMENT_BUTTON)
+        self.click(SurveyLocators.RESTORE_ELEMENT_AGREE_BUTTON)
+        self.open_and_wait()
+
+    def search_survey(self, name):
+        # Выполняет поиск опроса по имени
+        self.input_text(SurveyLocators.SEARCH_INPUT, name)
+
+    def search_survey_clear(self):
+        # Очищает строку поиска
+        self.find(SurveyLocators.SEARCH_INPUT).send_keys('\b' * 1000)
+
     def is_logo_uploaded(self):
+        # Проверяет, отображается ли загруженный логотип
         return self.find(SurveyLocators.APP_LOGO).is_displayed()
 
-    def is_on_questions_page(self):
-        return self.find(SurveyLocators.QUESTION_1_TEXTAREA).is_displayed()
-
     def is_close_confirmation_present(self):
+        # Проверяет наличие модального окна подтверждения закрытия редактора
         try:
-            self.find(SurveyLocators.CLOSE_EDITOR_MODAL_TITLE, timeout=3)
+            self.find(SurveyLocators.CLOSE_EDITOR_MODAL_TITLE_AFTER_EDIT, timeout=3)
             return True
-        except TimeoutException:
+        except Exception as e:
+            raise RuntimeError(f"Ошибка при появлении модального окна (edit): {e}")
+
+    def is_element_in_list(self, element_name):
+        # Проверяет, отображается ли элемент с указанным названием в списке
+        try:
+            self.find(SurveyLocators.LIST_ELEMENT(element_name), timeout=3)
+            return True
+        except Exception as e:
+            return False
+
+    def check_errors(self, amount, error, v=1):
+        # Проверяет количество отображаемых ошибок валидации на форме
+        try:
+            if v==1:
+                tests = SurveyLocators.VALIDATION_ERROR_FIELDS(error)
+
+                # Находим контейнер формы
+                container = self.find(SurveyLocators.FORM_CONTAINER)
+            elif v==2:
+                tests = SurveyLocators.VALIDATION_ERROR_FIELDS_SPAN(error)
+
+                # Находим контейнер формы
+                container = self.find(SurveyLocators.FORM_CONTAINER_2)
+            else:
+                raise RuntimeError(f"Некорректная версия")
+
+            # Ожидаем, пока в контейнере не появится минимум amount элемента с ошибкой
+            self.wait().until(
+                lambda driver: len(container.find_elements(*tests)) >= amount
+            )
+
+            # Проверяем наличие ошибок
+            errs = container.find_elements(*tests)
+            return len(errs) >= amount
+        except Exception as e:
             return False
