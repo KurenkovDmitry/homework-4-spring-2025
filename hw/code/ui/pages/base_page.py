@@ -69,6 +69,7 @@ class BasePage:
     
     def get_field_value(self, field_locator: tuple[str, str]):
         return self.find(field_locator).get_attribute('value')
+
     def submit(self, locator, timeout=None):
         self.find(locator, timeout).submit()
 

@@ -5,9 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from ui.pages.survey_page import SurveyPage
-from ui.pages.ad_plan_page import AdPlanPage
 from ui.pages.catalog_page import CommerceCenterPage
-from ui.pages.audience_page import AudiencePage
 from ui.utils import save_session, load_session
 
 
@@ -79,13 +77,5 @@ def survey_page(driver):
 
 
 @pytest.fixture
-def ad_plan_page(driver):
-    return AdPlanPage(driver)
-
-@pytest.fixture
 def catalog_page(driver):
     return CommerceCenterPage(driver)
-
-@pytest.fixture
-def audience_page(driver):
-    return AudiencePage(driver)

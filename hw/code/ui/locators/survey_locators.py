@@ -7,7 +7,8 @@ class SurveyLocators:
         pass
 
     CREATE_SURVEY_BUTTON = (By.CSS_SELECTOR, '[test-id="create-survey-button"]')
-    MODAL_CONTENT = (By.CLASS_NAME, 'ModalSidebarPage_content__2mBu8')
+    MODAL_CONTENT = (By.CLASS_NAME, 'vkui__portal-root')
+    MODAL = (By.CLASS_NAME, "PopoverContent_root__C8WZq")
 
     # Локаторы для fill_survey_form
     NAME_INPUT = (By.CSS_SELECTOR, 'input[placeholder="Введите название"]')
@@ -20,85 +21,46 @@ class SurveyLocators:
     STYLE_DIV = lambda style_id: (By.CSS_SELECTOR, f'div[data-id="{style_id}"]')
     TITLE_INPUT = (By.CSS_SELECTOR, 'input[placeholder="Введите заголовок"]')
 
-    # Локаторы для proceed_to_questions
     SUBMIT_BUTTON = (By.CSS_SELECTOR, 'button[data-testid="submit"]')
-    QUESTION_1_TEXTAREA = (By.XPATH,
-                           "//div[@id='root']/div/div[3]/div/div[2]/form/div[2]/div/div/section/div/div/div/div[2]/div/span/textarea")
-    YES_INPUT = (By.XPATH,
-                 "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div/div[2]/div[1]/div/div[1]/div[1]/div/span/input")
-    NO_INPUT = (By.XPATH,
-                "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div/div[2]/div[1]/div/div[1]/div[2]/div/span/input")
-    ADD_ANSWER_BUTTON = (By.XPATH,
-                         "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div/div[2]/div[2]/button")
-    REMOVE_ANSWER_BUTTON = (By.XPATH,
-                            "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div/div[2]/div[1]/div/div[1]/div[3]/div/button")
-    NEUTRAL_INPUT = (By.XPATH,
-                     "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div/div[2]/div[1]/div/div[1]/div[3]/div/span/input")
-    TEMPLATE_ANSWER_BUTTON = (By.XPATH,
-                              "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div/div[2]/div[2]/div/button")
-    TEMPLATE_OPTION = (By.XPATH, "/html/body/div[2]/div/div/div[1]/div")
+    QUESTION_1_TEXTAREA = (By.XPATH, '//textarea[@placeholder="Текст вопроса"]')
+    YES_INPUT = (By.XPATH, '(//input[@placeholder="Введите ответ"])[1]')
+    NO_INPUT = (By.XPATH, '(//input[@placeholder="Введите ответ"])[2]')
+    ADD_ANSWER_BUTTON = (By.XPATH, '//button[.//span[text()="Добавить вариант"]]')
+    REMOVE_ANSWER_BUTTON = (By.CSS_SELECTOR, 'button.Answer_removeBtn__owvhi')
+    NEUTRAL_INPUT = (By.XPATH, '(//input[@placeholder="Введите ответ"])[3]')
+    TEMPLATE_ANSWER_BUTTON = (By.XPATH, '//button[.//span[text()="Ответ из шаблона"]]')
+    TEMPLATE_ANSWER_MODAL = (By.CLASS_NAME, "Tooltip_tooltipContainer__2gjYa")
+    TEMPLATE_OPTION = (By.XPATH, '//span[contains(text(), "Другое (свой ответ)")]')
 
-    # Второй вопрос (шкала)
-    ADD_QUESTION_BUTTON = (
-    By.XPATH, "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/button[1]")
-    SCALE_TYPE = (By.XPATH,
-                  "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[2]/div/div[1]/div[1]/div[2]/div")
-    SCALE_OPTION = (By.XPATH, "/html/body/div[2]/div/div/div[4]")
-    SCALE_RANGE = (By.XPATH,
-                   "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[2]/div/div[1]/div[1]/div[3]/div/div")
-    RANGE_OPTION = (By.XPATH, "/html/body/div[2]/div/div/div[2]")
-    QUESTION_2_TEXTAREA = (By.XPATH,
-                           "//div[@id='root']/div/div[3]/div/div[2]/form/div[2]/div/div/section/div/div/div[2]/div/div[2]/div/span/textarea")
-    SCALE_MIN_INPUT = (By.XPATH,
-                       "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[2]/div/div[2]/div/div/div/div[2]/span[1]/input")
-    SCALE_MAX_INPUT = (By.XPATH,
-                       "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[2]/div/div[2]/div/div/div/div[2]/span[2]/input")
-    RULE_BUTTON = (By.XPATH,
-                   "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[2]/div/div[1]/div[2]/div[1]/button")
-    RULE_CRITERIA = (By.XPATH,
-                     "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[2]/div/div[2]/div[1]/fieldset/div[2]/div/span")
-    RULE_OPTION_1 = (By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div[1]")
-    RULE_OPTION_2 = (By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div[2]")
+    ADD_QUESTION_BUTTON = (By.XPATH, '//button[.//span[text()="Добавить вопрос"]]')
+    TYPE = (By.XPATH, '//div[contains(@class, "HintSelector_hintSelectorButton__pfubH")]')
+    SCALE_OPTION = (By.XPATH, '//span[contains(text(), "Шкала")]')
+    SCALE_RANGE = (By.XPATH, '//div[text()="0 — 10"]')
+    RANGE_OPTION = (By.XPATH, '//span[contains(text(), "1 — 10")]')
+    QUESTION_2_TEXTAREA = (By.XPATH, '(//textarea[@placeholder="Текст вопроса"])[2]')
+    SCALE_MIN_INPUT = (By.XPATH, '//input[contains(@value, "0 - Скорее нет")]')
+    SCALE_MAX_INPUT = (By.XPATH, '//input[contains(@value, "10 - Скорее да")]')
+    RULE_BUTTON = (By.CSS_SELECTOR, 'button.Question_conditionButton__pjBTk')
+    RULE_CRITERIA = (By.CSS_SELECTOR, 'div.ChipsSelect_wrapper__m9y64')
+    RULE_OPTION_1 = (By.XPATH, '//div[contains(@class, "vkuiPopover")]//div[1]/div[1]')
+    RULE_OPTION_2 = (By.XPATH, '//div[contains(@class, "vkuiPopover")]//div[1]/div[2]')
 
-    # Третий вопрос (текст)
-    QUESTION_3_TEXTAREA = (By.XPATH,
-                           "//div[@id='root']/div/div[3]/div/div[2]/form/div[2]/div/div/section/div/div/div[3]/div/div[2]/div/span/textarea")
-    TEXT_TYPE = (By.XPATH,
-                 "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[3]/div/div[1]/div[1]/div[2]/div")
-    TEXT_OPTION = (By.XPATH, "/html/body/div[2]/div/div/div[3]")
+    QUESTION_3_TEXTAREA = (By.XPATH, '(//textarea[@placeholder="Текст вопроса"])[3]')
+    TEXT_OPTION = (By.XPATH, '//span[contains(text(), "Ответ в свободной форме")]')
 
-    # Четвертый вопрос (множественный выбор)
-    MULTIPLE_CHOICE_TYPE = (By.XPATH,
-                            "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[4]/div/div[1]/div[1]/div[2]/div")
-    MULTIPLE_CHOICE_OPTION = (By.XPATH, "/html/body/div[2]/div/div/div[2]")
-    QUESTION_4_TEXTAREA = (By.XPATH,
-                           "//div[@id='root']/div/div[3]/div/div[2]/form/div[2]/div/div/section/div/div/div[4]/div/div[2]/div/span/textarea")
-    CHOICE_1_INPUT = (By.XPATH,
-                      "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[4]/div/div[2]/div[1]/div/div[1]/div[1]/div/span/input")
-    CHOICE_2_INPUT = (By.XPATH,
-                      "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[4]/div/div[2]/div[1]/div/div[1]/div[2]/div/span/input")
-    DUPLICATE_QUESTION_BUTTON = (By.XPATH,
-                                 "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[4]/div/div[1]/div[2]/div[2]/button")
-    REMOVE_DUPLICATE_BUTTON = (By.XPATH,
-                               "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div/div[5]/div/div[1]/div[2]/div[3]/button")
+    MULTIPLE_CHOICE_OPTION = (By.XPATH, '//span[contains(text(), "Несколько из списка")]')
+    DUPLICATE_QUESTION_BUTTON = (By.CSS_SELECTOR, 'button.Question_duplicateQuestionButton__R6XyA')
+    REMOVE_QUESTION_BUTTON = (By.CSS_SELECTOR, 'button.Question_removeQuestionButton__lJ5wm')
 
-    # Стоп-экран
-    ADD_STOP_SCREEN_BUTTON = (
-    By.XPATH, "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/button[2]")
-    REMOVE_STOP_SCREEN_BUTTON = (By.XPATH,
-                                 "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div[2]/div/div[1]/div[2]/div/button")
-    TRIGGER_QUESTION = (By.XPATH,
-                        "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div[2]/div/div[2]/div[1]/div/div/div/input")
-    TRIGGER_QUESTION_OPTION = (
-    By.XPATH, "/html/body/div[1]/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div[1]/div[1]/div/div[1]")
-    TRIGGER_CRITERIA = (By.XPATH,
-                        "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div[2]/div/div[2]/div[2]/div/span")
-    TRIGGER_OPTION_1 = (By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div[1]")
-    TRIGGER_OPTION_2 = (By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div[2]")
-    THANK_YOU_TITLE = (By.XPATH,
-                       "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div[2]/div/div[3]/div[1]/span/input")
-    THANK_YOU_DESCRIPTION = (By.XPATH,
-                             "//*[@id='root']/div/div[3]/div/div[2]/form/div[2]/div[1]/div[1]/section/div/div[2]/div/div[3]/div[2]/span/input")
+    ADD_STOP_SCREEN_BUTTON = (By.XPATH, '//button[text()="Добавить стоп-экран"]')
+    REMOVE_STOP_SCREEN_BUTTON = (By.CSS_SELECTOR, 'button.StopScreen_removeButton__oX7R+')
+    TRIGGER_QUESTION = (By.XPATH, '//input[@placeholder="Выбрать вопрос"]')
+    TRIGGER_QUESTION_OPTION = (By.XPATH, '//div[contains(@class, "vkuiPopover")]//div[1]')
+    TRIGGER_CRITERIA = (By.CSS_SELECTOR, 'div.ChipsSelect_wrapper__m9y64')
+    TRIGGER_OPTION_1 = (By.XPATH, '//div[contains(@class, "vkuiPopover")]//div[1]/div[1]')
+    TRIGGER_OPTION_2 = (By.XPATH, '//div[contains(@class, "vkuiPopover")]//div[1]/div[2]')
+    THANK_YOU_TITLE = (By.XPATH, '//input[@placeholder="Введите заголовок"]')
+    THANK_YOU_DESCRIPTION = (By.XPATH, '//input[@placeholder="Введите описание опроса"]')
 
     # Локаторы для ending
     ENDING_TITLE_INPUT = (By.CSS_SELECTOR, 'input[placeholder="Введите заголовок"]')
