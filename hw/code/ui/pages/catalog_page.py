@@ -3,13 +3,23 @@ from hw.code.ui.pages.base_page import BasePage
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import os
 
 
 class CommerceCenterPage(BasePage):
     url = 'https://ads.vk.com/hq/ecomm/catalogs'
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'catalog_products.csv'))
+
 
     def find_create_catalog_button(self):
         return self.find(CatalogAndCommerceLocators.CREATE_CATALOG_BUTTON, timeout=10)
+
+    def close_tutorial_modal(self):
+        try:
+            self.find_tutorial_moodal()
+            self.click_close_tutorial_modal()
+        except:
+            pass
 
     def find_tutorial_moodal(self):
         return self.find(CatalogAndCommerceLocators.CLOSE_TUTORIAL_BUTTON)
@@ -22,7 +32,7 @@ class CommerceCenterPage(BasePage):
         self.find(CatalogAndCommerceLocators.CREATE_CATALOG_BUTTON, timeout=10)
         self.click(CatalogAndCommerceLocators.CREATE_CATALOG_BUTTON)
 
-    def find_new_catalog_header(self):
+    def find_new_catalog(self):
         return self.exists(CatalogAndCommerceLocators.NEW_CATALOG_HEADER, timeout=10)
     
     def fill_field_catalog_name(self, name):
@@ -40,8 +50,8 @@ class CommerceCenterPage(BasePage):
     def find_feed_input(self):
         return self.exists(CatalogAndCommerceLocators.FEED_INPUT, timeout=10)
     
-    def upload_feed_file(self, file_path):
-        self.find(CatalogAndCommerceLocators.FEED_INPUT).send_keys(file_path)
+    def upload_feed_file(self):
+        self.find(CatalogAndCommerceLocators.FEED_INPUT).send_keys(self.file_path)
     
     def click_submit_create_button(self):
         self.find(CatalogAndCommerceLocators.SUBMIT_BUTTON, timeout=10)
@@ -56,7 +66,7 @@ class CommerceCenterPage(BasePage):
         self.wait(5).until(EC.invisibility_of_element_located(CatalogAndCommerceLocators.NEW_CATALOG_HEADER))
 
     # товары добавляются очень долго, поэтому поставлен большой таймаут
-    def find_table_headers(self):
+    def find_table(self):
         return self.exists(CatalogAndCommerceLocators.TABLE_HEADERS, timeout=1000)
     
     def delete_catalog_if_exists(self):
@@ -99,23 +109,23 @@ class CommerceCenterPage(BasePage):
         self.find(CatalogAndCommerceLocators.SEARCH_INPUT, timeout=20)
         self.input_text(CatalogAndCommerceLocators.SEARCH_INPUT, name)
 
-    def create_catalog(self,file_path, name="Каталог"):
+    def create_catalog(self, name="Каталог"):
         self.open_and_wait()
         self.click_create_catalog_button()
-        self.find_new_catalog_header()
+        self.find_new_catalog()
         self.click_manual_option()
-        self.upload_feed_file(file_path)
+        self.upload_feed_file(self.file_path)
         self.fill_field_catalog_name(name)
         self.click_submit_create_button()
         # ждем, пока уберется окно создания
         self.wait(5).until(EC.invisibility_of_element_located(CatalogAndCommerceLocators.NEW_CATALOG_HEADER))
         self.open_and_wait()
-        self.find_table_headers()
+        self.find_table()
 
     def wait_active_catalog(self):
         return self.exists(CatalogAndCommerceLocators.STATUS_ACTIVE, timeout=1000)
 
-    def find_nothing_found_header(self):
+    def find_nothing_found_message(self):
         return self.exists(CatalogAndCommerceLocators.NOTHING_FOUND_HEADER, timeout=10)
     
     def click_catalog_item(self):
@@ -137,7 +147,7 @@ class CommerceCenterPage(BasePage):
         self.find(CatalogAndCommerceLocators.ADD_GOODS_BUTTON, timeout=10)
         self.click(CatalogAndCommerceLocators.ADD_GOODS_BUTTON)
 
-    def find_settings_panel_header(self):
+    def find_settings_panel(self):
         return self.exists(CatalogAndCommerceLocators.SETTINGS_PANEL_HEADER, timeout=10)
     
     def click_cancel_add_goods_button(self):
@@ -177,7 +187,7 @@ class CommerceCenterPage(BasePage):
     def find_use_filters_button(self):
         return self.exists(CatalogAndCommerceLocators.USE_FILTERS_BUTTON, timeout=10)
     
-    def find_choose_goods_manually_button(self):
+    def find_choose_goods_manually(self):
         return self.exists(CatalogAndCommerceLocators.CHOOSE_GOODS_MANUALLY_BUTTON, timeout=10)
     
     def click_use_filters_button(self):
@@ -189,7 +199,7 @@ class CommerceCenterPage(BasePage):
         self.find(CatalogAndCommerceLocators.CHOOSE_GOODS_MANUALLY_BUTTON, timeout=10)
         self.click(CatalogAndCommerceLocators.CHOOSE_GOODS_MANUALLY_BUTTON)
 
-    def find_new_group_header(self):
+    def find_new_group_block(self):
         return self.exists(CatalogAndCommerceLocators.NEW_GROUP_HEADER, timeout=10)
     
     def click_add_filter_button(self):
