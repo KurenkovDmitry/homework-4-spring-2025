@@ -1,6 +1,7 @@
 import pytest
 from shutil import copyfile
 from pathlib import Path
+from hw.code.ui.locators.survey_locators import SurveyLocators
 
 
 class TestSurvey:
@@ -61,7 +62,7 @@ class TestSurvey:
         survey_page.submit_form()
 
     @pytest.fixture
-    def create_survey(self, sample_first_and_second_page, survey_page):
+    def create_survey(self, driver, sample_first_and_second_page, survey_page):
         """
         Полный сценарий создания опроса: от заполнения первой страницы до настройки финального экрана.
 
@@ -73,77 +74,98 @@ class TestSurvey:
         survey_page.set_ending_title("Test")
         survey_page.set_ending_description("Test")
         survey_page.save_ending()
+        yield
+        driver.get(survey_page.url)
+        survey_page.is_opened()
+        survey_page.archive_survey()
 
     # Тест 1: Проверка открытия модального окна создания опроса
     def test_create_survey_modal_opens(self, survey_opened, survey_page):
         # Утверждение: модальное окно открыто, проверяем видимость поля ввода названия
-        assert survey_page.is_modal_opened(), "Модальное окно не открылось"
+        assert survey_page.find(SurveyLocators.NAME_INPUT).is_displayed(), "Модальное окно не открылось"
 
     # Тест 2: Заполнение первой страницы формы опроса
     def test_fill_first_page(self, survey_opened, survey_page):
+        name = "FlexiKanban"
+        company = "FlexiKanban"
+        title = "Разделим?"
+        description = "Не хватало ли Вам возможности автоматически делить и соединять задачи на своих досках?"
+
         # Ввод текста в обязательные поля
-        survey_page.set_name("FlexiKanban")
-        survey_page.set_company("FlexiKanban")
-        survey_page.set_title("Разделим?")
-        survey_page.set_description(
-            "Не хватало ли Вам возможности автоматически делить и соединять задачи на своих досках?")
+        survey_page.set_name(name)
+        survey_page.set_company(company)
+        survey_page.set_title(title)
+        survey_page.set_description(description)
         survey_page.select_style("6")
 
-        assert survey_page.check_name("FlexiKanban"), "Название не сохранено"
+        assert survey_page.get_field_value(SurveyLocators.NAME_INPUT) == name, "Наименование объявления не сохранено"
+        assert survey_page.get_field_value(SurveyLocators.COMPANY_INPUT) == company, "Название компании не сохранено"
+        assert survey_page.get_field_value(SurveyLocators.TITLE_INPUT) == title, "Название не сохранено"
+        assert survey_page.get_field_value(SurveyLocators.DESCRIPTION_TEXTAREA) == description, "Описание не сохранено"
 
     # Тест 3: Загрузка логотипа
     def test_upload_logo(self, survey_opened, survey_page, logo_path):
         survey_page.upload_logo(logo_path)
 
         # Проверка, что логотип был загружен
-        assert survey_page.is_logo_uploaded(), "Логотип не отображается"
+        assert survey_page.find(SurveyLocators.APP_LOGO).is_displayed(), "Логотип не отображается"
 
     # Тест 4: Добавление одиночного вопроса
     def test_configure_first_question_single_choice(self, sample_first_page, survey_page):
+        options = ["Да", "Нет", "Нейтрально"]
+        title = "Хотели бы Вы иметь возможность делить задачи одной кнопкой?"
+
         survey_page.configure_first_question(
             question_type='single_choice',
-            text="Хотели бы Вы иметь возможность делить задачи одной кнопкой?",
-            options=["Да", "Нет", "Нейтрально"],
+            text=title,
+            options=options,
             sample_answer=True
         )
 
-        assert survey_page.get_question_text(
-            1) == "Хотели бы Вы иметь возможность делить задачи одной кнопкой?", "Текст вопроса неверный"
-        assert survey_page.check_answers_v1(ans=['Да', 'Нет', 'Нейтрально']), "Полученные ответы не совпадают с введенными"
+        assert survey_page.find(SurveyLocators.QUESTION_1_TEXTAREA).get_attribute('value') == title, "Текст вопроса неверный"
+        assert survey_page.find(SurveyLocators.YES_INPUT).get_attribute('value') == options[0] and survey_page.find(SurveyLocators.NO_INPUT).get_attribute('value') == options[1] and survey_page.find(SurveyLocators.NEUTRAL_INPUT).get_attribute('value') == options[2], "Полученные ответы не совпадают с введенными"
 
     # Тест 5: Добавление множественного выбора
     def test_configure_first_question_multiple_choice(self, sample_first_page, survey_page):
+        options = ["Да", "Нет", "Нейтрально"]
+        title = "Хотели бы Вы иметь возможность делить задачи одной кнопкой?"
+
         survey_page.configure_first_question(
             question_type='multiple_choice',
-            text="Хотели бы Вы иметь возможность делить задачи одной кнопкой?",
-            options=["Да", "Нет", "Нейтрально"]
+            text=title,
+            options=options
         )
 
-        assert survey_page.get_question_text(
-            1) == "Хотели бы Вы иметь возможность делить задачи одной кнопкой?", "Текст вопроса неверный"
-        assert survey_page.check_answers_v1(['Да', 'Нет', 'Нейтрально']), "Полученные ответы не совпадают с введенными"
+        assert survey_page.find(SurveyLocators.QUESTION_1_TEXTAREA).get_attribute('value') == title, "Текст вопроса неверный"
+        assert survey_page.find(SurveyLocators.YES_INPUT).get_attribute('value') == options[0] and survey_page.find(
+            SurveyLocators.NO_INPUT).get_attribute('value') == options[1] and survey_page.find(
+            SurveyLocators.NEUTRAL_INPUT).get_attribute('value') == options[2], "Полученные ответы не совпадают с введенными"
 
     # Тест 6: Добавление шкального вопроса
     def test_configure_first_question_scale_question(self, sample_first_page, survey_page):
+        text = "Оцените, насколько бы вы хотели увидеть этот функционал"
+
         survey_page.configure_first_question(
             question_type='scale',
-            text="Оцените, насколько бы вы хотели увидеть этот функционал",
+            text=text,
             min_label=" Нет",
             max_label=" Да"
         )
 
-        assert survey_page.get_question_text(
-            1) == "Оцените, насколько бы вы хотели увидеть этот функционал", "Текст вопроса неверный"
+        assert survey_page.find(SurveyLocators.QUESTION_1_TEXTAREA).get_attribute(
+            'value') == text, "Текст вопроса неверный"
 
     # Тест 7: Добавление текстового вопроса
     def test_configure_first_question_text_question(self, sample_first_page, survey_page):
+        text = "Напишите свои пожелания для этого функционала"
+
         survey_page.configure_first_question(
             question_type='text',
-            text="Напишите свои пожелания для этого функционала"
+            text=text
         )
 
-        assert survey_page.get_question_text(
-            1) == "Напишите свои пожелания для этого функционала", "Текст вопроса неверный"
+        assert survey_page.find(SurveyLocators.QUESTION_1_TEXTAREA).get_attribute(
+            'value') == text, "Текст вопроса неверный"
 
     # Тест 8: Добавление второго вопроса и его удаление
     def test_add_and_remove_second_question(self, sample_first_page, survey_page):
@@ -159,7 +181,7 @@ class TestSurvey:
             delete=True
         )
 
-        assert survey_page.check_amount_questions(1), "Второй вопрос не был удален или изначально не добавлен корректно"
+        assert len(survey_page.find_elements(SurveyLocators.QUESTION_1_TEXTAREA)) == 1, "Второй вопрос не был удален или изначально не добавлен корректно"
 
     # Тест 9: Дублирование вопроса
     def test_duplicate_question(self, sample_first_page, survey_page):
@@ -171,7 +193,7 @@ class TestSurvey:
         )
         survey_page.duplicate(0)
 
-        assert survey_page.check_amount_questions(1), "Дубликат вопроса не был удален или изначально не добавлен"
+        assert len(survey_page.find_elements(SurveyLocators.QUESTION_1_TEXTAREA)) == 1, "Дубликат вопроса не был удален или изначально не добавлен"
 
     # Тест 10: Добавление и удаление правила (условий показа)
     def test_add_and_remove_rule(self, sample_first_page, survey_page):
@@ -193,10 +215,13 @@ class TestSurvey:
         )
         survey_page.remove_rule()
 
-        assert survey_page.check_rule(), "Правило не было удалено"
+        assert survey_page.find(SurveyLocators.RULE_BUTTON).is_displayed(), "Правило не было удалено"
 
     # Тест 11: Стоп-экран
     def test_add_stop_screen(self, sample_first_page, survey_page):
+        title = "Спасибо, Вам за участие!"
+        description = "Вы нам очень помогли, оставив своё мнение по поводу этого вопроса!"
+
         survey_page.configure_first_question(
             question_type='single_choice',
             text="Хотели бы Вы иметь возможность делить задачи одной кнопкой?",
@@ -210,23 +235,29 @@ class TestSurvey:
             amount=2
         )
         survey_page.set_thank_you_title(
-            title="Спасибо, Вам за участие!"
+            title=title
         )
         survey_page.set_thank_you_description(
-            description="Вы нам очень помогли, оставив своё мнение по поводу этого вопроса!"
+            description=description
         )
 
-        assert survey_page.check_stop_screen(), "Стоп-экран не добавлен"
-        assert survey_page.check_thank_you_title("Спасибо, Вам за участие!"), "Заголовок благодарности не установлен"
+        assert survey_page.exists(SurveyLocators.THANK_YOU_TITLE), "Стоп-экран не добавлен"
+        assert survey_page.get_field_value(SurveyLocators.THANK_YOU_TITLE) == title, "Заголовок благодарности не установлен"
+        assert survey_page.get_field_value(SurveyLocators.THANK_YOU_DESCRIPTION) == description, "Описание благодарности не установлено"
 
     # Тест 12: Экран завершения (эндинг)
     def test_set_ending_screen(self, sample_first_and_second_page, survey_page):
-        survey_page.set_ending_title("Спасибо за Ваши ответы!")
-        survey_page.set_ending_description("Заявка отправлена, ждите результат!")
-        survey_page.add_link("https://github.com/AnyFlex-Solutions")
+        title = "Спасибо за Ваши ответы!"
+        description = "Заявка отправлена, ждите результат!"
+        site = "https://github.com/AnyFlex-Solutions"
 
-        assert survey_page.check_ending_title("Спасибо за Ваши ответы!"), "Заголовок завершения не установлен"
-        assert survey_page.check_ending_link("https://github.com/AnyFlex-Solutions"), "Ссылка не установлена"
+        survey_page.set_ending_title(title)
+        survey_page.set_ending_description(description)
+        survey_page.add_link(site)
+
+        assert survey_page.get_field_value(SurveyLocators.ENDING_TITLE_INPUT) == title, "Заголовок завершения не установлен"
+        assert survey_page.get_field_value(SurveyLocators.ENDING_DESCRIPTION_INPUT) == description, "Описание завершения не установлен"
+        assert survey_page.find(SurveyLocators.LINK_INPUT).get_attribute('value') == site, "Ссылка не установлена"
 
     # Тест 13: Проверка отмены сохранения при редактировании
     def test_edit_survey_without_saving(self, create_survey, survey_page):
@@ -235,10 +266,7 @@ class TestSurvey:
         survey_page.confirm_close_without_saving()
 
         survey_page.open_edit_modal()
-        assert survey_page.check_name('Test'), "The value has changed"
-
-        survey_page.close_modal()
-        survey_page.archive_survey()
+        assert survey_page.get_field_value(SurveyLocators.NAME_INPUT) == 'Test', "The value has changed"
 
     # Тест 14: Проверка сохранения при редактировании
     def test_edit_survey_with_saving(self, create_survey, survey_page):
@@ -247,10 +275,7 @@ class TestSurvey:
         survey_page.confirm_close_with_saving()
 
         survey_page.open_edit_modal()
-        assert survey_page.check_name('edit'), "The value hasn`t changed"
-        survey_page.close_modal()
-
-        survey_page.archive_survey()
+        assert survey_page.get_field_value(SurveyLocators.NAME_INPUT) == 'edit', "The value hasn`t changed"
 
     # Тест 15: Восстановление опроса из архива
     def test_restore_survey(self, create_survey, survey_page):
@@ -258,39 +283,101 @@ class TestSurvey:
         survey_page.select_archive_category()
         survey_page.restore_survey('Test')
         survey_page.select_active_category()
-        survey_page.archive_survey()
 
-        assert survey_page.is_element_in_list('Test'), "Опрос не был восстановлен в активные"
+        try:
+            survey_page.find(SurveyLocators.LIST_ELEMENT("Test"), timeout=3)
+            found = True
+        except:
+            found = False
+
+        assert found, "Опрос не был восстановлен в активные"
 
     # Тест 16: Поиск по названию опроса
     def test_search_survey(self, create_survey, survey_page):
         survey_page.search_survey('Test')
-        assert survey_page.is_element_in_list('Test')
+
+        try:
+            survey_page.find(SurveyLocators.LIST_ELEMENT("Test"), timeout=3)
+            found = True
+        except:
+            found = False
+
+        assert found, "Опрос не отобразился"
 
         survey_page.search_survey('2')
-        assert not survey_page.is_element_in_list('Test2')
+
+        try:
+            survey_page.find(SurveyLocators.LIST_ELEMENT("Test"), timeout=3)
+            found = False
+        except:
+            found = True
+
+        assert found, "Опрос отобразился, хотя не долен"
 
         survey_page.search_survey_clear()
-
-        survey_page.archive_survey()
 
     # Тест 17: Проверка ошибок валидации (пустые поля)
     def test_edit_survey_validation_errors_empty_field(self, survey_opened, survey_page):
         survey_page.submit_form()
 
-        assert survey_page.check_errors(5, 'Нужно заполнить'), "Ожидалось минимум 5 полей с ошибкой валидации"
+        error = 'Нужно заполнить'
+        amount = 5
+
+        tests = SurveyLocators.VALIDATION_ERROR_FIELDS(error)
+        # Находим контейнер формы
+        container = survey_page.find(SurveyLocators.FORM_CONTAINER)
+
+        # Ожидаем, пока в контейнере не появится минимум amount элемента с ошибкой
+        survey_page.wait().until(
+            lambda driver: len(container.find_elements(*tests)) >= amount
+        )
+
+        assert len(container.find_elements(*tests)) >= amount, "Ожидалось минимум 5 полей с ошибкой валидации"
 
     # Тест 18: Проверка ошибок валидации (слишком длинное значение)
     def test_edit_survey_validation_errors_big_value(self, survey_opened, survey_page):
         survey_page.submit_form()
         survey_page.set_company('testtesttesttesttesttesttesttest')
 
-        assert survey_page.check_errors(1, 'Сократите текст'), "Ожидалось минимум 5 полей с ошибкой валидации"
+        error = 'Сократите текст'
+        amount = 1
+
+        tests = SurveyLocators.VALIDATION_ERROR_FIELDS(error)
+        # Находим контейнер формы
+        container = survey_page.find(SurveyLocators.FORM_CONTAINER)
+
+        # Ожидаем, пока в контейнере не появится минимум amount элемента с ошибкой
+        survey_page.wait().until(
+            lambda driver: len(container.find_elements(*tests)) >= amount
+        )
+
+        assert len(container.find_elements(*tests)) >= amount, "Ожидалось минимум 5 полей с ошибкой валидации"
 
     # Тест 19: Проверка ошибок валидации (пустой вопрос)
     def test_edit_survey_validation_errors_empty_question(self, sample_first_page, survey_page):
         survey_page.submit_form()
         survey_page.add_stop_screen()
 
-        assert survey_page.check_errors(1, 'Вопрос должен быть не пустым и содержать минимум 2 ответа', v=2), "Ожидалось минимум 1 ошибка о не пустых ответах"
-        assert survey_page.check_errors(1, 'Нужно заполнить все поля', v=2), "Ожидалось минимум 1 ошибка о не пустых полях"
+        error1 = 'Вопрос должен быть не пустым и содержать минимум 2 ответа'
+        amount1 = 1
+
+        error2 = 'Нужно заполнить все поля'
+        amount2 = 1
+
+        tests1 = SurveyLocators.VALIDATION_ERROR_FIELDS_SPAN(error1)
+        tests2 = SurveyLocators.VALIDATION_ERROR_FIELDS_SPAN(error2)
+
+        # Находим контейнер формы
+        container = survey_page.find(SurveyLocators.FORM_CONTAINER_2)
+
+        # Явное ожидание обеих ошибок по количеству
+        survey_page.wait().until(
+            lambda driver: len(container.find_elements(*tests1)) >= amount1
+        ), f"Ожидалось минимум {amount1} ошибка(ок) с текстом: '{error1}'"
+
+        survey_page.wait().until(
+            lambda driver: len(container.find_elements(*tests2)) >= amount2
+        ), f"Ожидалось минимум {amount2} ошибка(ок) с текстом: '{error2}'"
+
+        assert len(container.find_elements(*tests1)) >= amount1, f"Ошибка: не найдено '{error1}'"
+        assert len(container.find_elements(*tests2)) >= amount2, f"Ошибка: не найдено '{error2}'"

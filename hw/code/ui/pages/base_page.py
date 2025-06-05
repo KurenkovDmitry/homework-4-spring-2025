@@ -39,13 +39,15 @@ class BasePage:
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
 
-    def click_retry(self, locator, retries=3, delay=0.5):
+    def click_retry(self, locator, retries=3, timeout=2):
         for _ in range(retries):
             try:
                 self.click(locator)
                 return
             except StaleElementReferenceException:
-                time.sleep(delay)
+                WebDriverWait(self.driver, timeout).until(
+                    EC.presence_of_element_located(locator)
+                )
         raise RuntimeError(f"Не удалось кликнуть по {locator} из-за устаревшего элемента")
 
     def safe_send_keys(self, element, text):
@@ -86,12 +88,14 @@ class BasePage:
     def new_url(self, url):
         self.driver.get(url)
 
-    def scroll_into_view(self, locator, retries=3, delay=0.5):
+    def scroll_into_view(self, locator, retries=3, timeout=2):
         for _ in range(retries):
             try:
                 el = self.find(locator)
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", el)
                 return
             except StaleElementReferenceException:
-                time.sleep(delay)
+                WebDriverWait(self.driver, timeout).until(
+                    EC.presence_of_element_located(locator)
+                )
         raise RuntimeError(f"Не удалось кликнуть по {locator} из-за устаревшего элемента")
