@@ -67,11 +67,11 @@ class CommerceCenterPage(BasePage):
 
     # товары добавляются очень долго, поэтому поставлен большой таймаут
     def find_table(self):
-        return self.exists(CatalogAndCommerceLocators.TABLE_HEADERS, timeout=1000)
+        return self.exists(CatalogAndCommerceLocators.TABLE_ITEM, timeout=1000)
     
     def delete_catalog_if_exists(self):
         self.open_and_wait()
-        if self.exists(CatalogAndCommerceLocators.TABLE_HEADERS):
+        if self.exists(CatalogAndCommerceLocators.TABLE_ITEM):
             self.delete_catalog()
         else:
             self.open_and_wait()

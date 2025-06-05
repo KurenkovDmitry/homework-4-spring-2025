@@ -11,7 +11,7 @@ class CommerceCenterPageLocators:
     SUBMIT_BUTTON = (By.XPATH, '//button[@data-testid="submit" and @title="Создать каталог" and .//span[text()="Создать каталог"]]')
     FIELD_ERROR_ALERT = (By.XPATH, '//div[contains(@class, "formBanner_text")]/span[contains(text(), "Нужно заполнить")]')
     CANCEL_BUTTON = (By.XPATH, '//button[@data-testid="cancel" and .//span[text()="Отмена"]]')
-    TABLE_HEADERS = (By.XPATH, '//div[@role="gridcell" and contains(@class, "BaseTable__header-cell")]')
+    TABLE_ITEM = (By.XPATH, '//span[@title="Худи VK" and contains(@class, "NameCell_itemName__")]')
     CATALOG_ITEMS = (By.XPATH, '//a[@data-testid="catalog-item"]')
     SEARCH_INPUT = (By.XPATH, '//input[@data-testid="search"]')
     NOTHING_FOUND_HEADER = (By.XPATH, '//h2[contains(@class, "vkuiPlaceholder__header") and text()="Ничего не нашлось"]')
