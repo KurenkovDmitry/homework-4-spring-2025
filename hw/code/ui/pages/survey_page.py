@@ -229,6 +229,30 @@ class SurveyPage(BasePage):
         # Проверяет, совпадает ли значение поля "Название" с ожидаемым
         return self.get_field_value(SurveyLocators.NAME_INPUT) == value
 
+    def check_answers_v1(self, ans):
+        if self.find(SurveyLocators.YES_INPUT).get_attribute('value') != ans[0] or self.find(SurveyLocators.NO_INPUT).get_attribute('value') != ans[1] or self.find(SurveyLocators.NEUTRAL_INPUT).get_attribute('value') != ans[2]:
+            return False
+        return True
+
+    def check_amount_questions(self, amount):
+        question_textareas = self.find_elements(SurveyLocators.QUESTION_1_TEXTAREA)
+        return len(question_textareas) == amount
+
+    def check_rule(self):
+        return self.find(SurveyLocators.RULE_BUTTON).is_displayed()
+
+    def check_stop_screen(self):
+        return self.exists(SurveyLocators.THANK_YOU_TITLE)
+
+    def check_thank_you_title(self, value):
+        return self.get_field_value(SurveyLocators.THANK_YOU_TITLE) == value
+
+    def check_ending_title(self, value):
+        return self.get_field_value(SurveyLocators.ENDING_TITLE_INPUT) == value
+
+    def check_ending_link(self, value):
+        return self.find(SurveyLocators.LINK_INPUT).get_attribute('value') == value
+
     def close_modal(self):
         # Закрывает модальное окно
         self.click(SurveyLocators.MODAL_OVERLAY)
@@ -266,6 +290,7 @@ class SurveyPage(BasePage):
         self.open_and_wait()
 
     def search_survey(self, name):
+        self.click(SurveyLocators.SEARCH_INPUT)
         # Выполняет поиск опроса по имени
         self.input_text(SurveyLocators.SEARCH_INPUT, name)
 
@@ -276,6 +301,10 @@ class SurveyPage(BasePage):
     def is_logo_uploaded(self):
         # Проверяет, отображается ли загруженный логотип
         return self.find(SurveyLocators.APP_LOGO).is_displayed()
+
+    def is_modal_opened(self):
+        # Проверяет, отображается ли модальное окно
+        return self.find(SurveyLocators.NAME_INPUT).is_displayed()
 
     def is_close_confirmation_present(self):
         # Проверяет наличие модального окна подтверждения закрытия редактора
@@ -319,3 +348,16 @@ class SurveyPage(BasePage):
             return len(errs) >= amount
         except Exception as e:
             return False
+
+    def get_question_text(self, question_number):
+        """
+        Получает текст вопроса по его номеру.
+
+        Аргументы:
+            question_number (int): Номер вопроса, начиная с 1.
+
+        Возвращает:
+            str: Текст вопроса.
+        """
+        question_element = self.find(SurveyLocators.QUESTION_1_TEXTAREA)
+        return question_element.get_attribute('value')
